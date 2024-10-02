@@ -1,6 +1,5 @@
 package cristianorocchi.graffitiplatform.controller;
 
-
 import cristianorocchi.graffitiplatform.entities.Graffito;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
@@ -8,7 +7,9 @@ import cristianorocchi.graffitiplatform.services.GraffitoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,10 +36,16 @@ public class GraffitoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Graffito createGraffito(@RequestBody Graffito graffito, @AuthenticationPrincipal User user) {
-        return graffitoService.save(graffito, user.getId());
-    }
+    public Graffito createGraffito(@RequestBody Graffito graffito) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
 
+        // Associa l'utente corrente al graffito
+        graffito.setUser(currentUser);
+
+        // Passa anche l'ID dell'utente
+        return graffitoService.save(graffito, currentUser.getId());
+    }
 
 
     @PutMapping("/{id}")
@@ -48,6 +55,7 @@ public class GraffitoController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @graffitoService.isGraffitoOwner(#id, authentication.principal.id)")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGraffito(@PathVariable UUID id) {
         graffitoService.deleteById(id);
@@ -55,6 +63,7 @@ public class GraffitoController {
 
     // Carica immagine per il graffito
     @PostMapping("/{id}/img")
+    @PreAuthorize("hasRole('ADMIN') or @graffitoService.isGraffitoOwner(#id, authentication.principal.id)")
     @ResponseStatus(HttpStatus.OK)
     public Graffito uploadGraffitoImage(@PathVariable UUID id, @RequestParam("img") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
@@ -63,4 +72,3 @@ public class GraffitoController {
         return graffitoService.uploadImage(id, file);
     }
 }
-

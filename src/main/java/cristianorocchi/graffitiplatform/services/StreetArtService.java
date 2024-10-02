@@ -50,8 +50,10 @@ public class StreetArtService {
             streetArt.setAnnoCreazione("Sconosciuto");
         }
 
+        // Salva e restituisce l'oggetto street art
         return streetArtRepository.save(streetArt);
     }
+
 
 
     public boolean isStreetArtOwner(UUID streetArtId, UUID userId) {

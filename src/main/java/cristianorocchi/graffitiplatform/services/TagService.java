@@ -40,23 +40,23 @@ public class TagService {
 
 
     //se vuoto è sconosciuto(Artista,annocreazione)
-    public Tag save(Tag tag) {
-        // Ottieni l'utente attualmente autenticato
-        User currentUser = userService.getCurrentUser();
-
-        // Assegna l'utente al tag
+    public Tag save(Tag tag, UUID userId) {
+        // Recupera l'utente autenticato corrente
+        User currentUser = userService.findById(userId);
         tag.setUser(currentUser);
 
+        // Gestione del valore "Sconosciuto" per artista e anno di creazione
         if (tag.getArtista() == null || tag.getArtista().trim().isEmpty()) {
             tag.setArtista("Sconosciuto");
         }
-
         if (tag.getAnnoCreazione() == null || tag.getAnnoCreazione().trim().isEmpty()) {
             tag.setAnnoCreazione("Sconosciuto");
         }
 
+        // Salva e restituisce l'oggetto tag
         return tagRepository.save(tag);
     }
+
 
 
     public Tag update(UUID id, Tag updatedTag) {

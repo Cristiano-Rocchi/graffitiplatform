@@ -50,8 +50,10 @@ public class GraffitoService {
             graffito.setAnnoCreazione("Sconosciuto");
         }
 
+        // Salva e restituisce l'oggetto graffito
         return graffitoRepository.save(graffito);
     }
+
 
 
 

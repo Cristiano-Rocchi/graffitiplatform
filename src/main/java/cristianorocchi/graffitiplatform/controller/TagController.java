@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,8 +44,8 @@ public class TagController {
         // Associa l'utente corrente al tag
         tag.setUser(currentUser);
 
-        // Salva il tag
-        return tagService.save(tag);
+        // Salva il tag passando anche l'ID dell'utente
+        return tagService.save(tag, currentUser.getId());
     }
 
     @PutMapping("/{id}")
@@ -54,6 +55,7 @@ public class TagController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @tagService.isTagOwner(#id, authentication.principal.id)")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTag(@PathVariable UUID id) {
         tagService.deleteById(id);
@@ -61,6 +63,7 @@ public class TagController {
 
     // Carica immagine per il tag
     @PostMapping("/{id}/img")
+    @PreAuthorize("hasRole('ADMIN') or @tagService.isTagOwner(#id, authentication.principal.id)")
     @ResponseStatus(HttpStatus.OK)
     public Tag uploadTagImage(@PathVariable UUID id, @RequestParam("img") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
