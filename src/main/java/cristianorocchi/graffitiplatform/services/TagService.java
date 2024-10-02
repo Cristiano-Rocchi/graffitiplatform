@@ -34,7 +34,19 @@ public class TagService {
         return tagRepository.findById(id).orElseThrow(() -> new NotFoundException("Tag non trovato"));
     }
 
+
+    //se vuoto è sconosciuto(Artista,annocreazione)
     public Tag save(Tag tag) {
+
+        if (tag.getArtista() == null || tag.getArtista().trim().isEmpty()) {
+            tag.setArtista("Sconosciuto");
+        }
+
+
+        if (tag.getAnnoCreazione() == null || tag.getAnnoCreazione().trim().isEmpty()) {
+            tag.setAnnoCreazione("Sconosciuto");
+        }
+
         return tagRepository.save(tag);
     }
 

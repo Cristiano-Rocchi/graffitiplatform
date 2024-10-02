@@ -32,7 +32,19 @@ public class StreetArtService {
         return streetArtRepository.findById(id).orElseThrow(() -> new NotFoundException("Opera di street art non trovata"));
     }
 
+
+    //se vuoto è sconosciuto(Artista,annocreazione)
     public StreetArt save(StreetArt streetArt) {
+
+        if (streetArt.getArtista() == null || streetArt.getArtista().trim().isEmpty()) {
+            streetArt.setArtista("Sconosciuto");
+        }
+
+
+        if (streetArt.getAnnoCreazione() == null || streetArt.getAnnoCreazione().trim().isEmpty()) {
+            streetArt.setAnnoCreazione("Sconosciuto");
+        }
+
         return streetArtRepository.save(streetArt);
     }
 

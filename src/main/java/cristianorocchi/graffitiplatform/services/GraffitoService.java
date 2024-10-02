@@ -33,7 +33,19 @@ public class GraffitoService {
         return graffitoRepository.findById(id).orElseThrow(() -> new NotFoundException("Graffito non trovato"));
     }
 
+
+    //se vuoto è sconosciuto(Artista,annocreazione)
     public Graffito save(Graffito graffito) {
+
+        if (graffito.getArtista() == null || graffito.getArtista().trim().isEmpty()) {
+            graffito.setArtista("Sconosciuto");
+        }
+
+
+        if (graffito.getAnnoCreazione() == null || graffito.getAnnoCreazione().trim().isEmpty()) {
+            graffito.setAnnoCreazione("Sconosciuto");
+        }
+
         return graffitoRepository.save(graffito);
     }
 
