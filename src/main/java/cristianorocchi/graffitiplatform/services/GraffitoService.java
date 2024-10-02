@@ -5,6 +5,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
 import cristianorocchi.graffitiplatform.entities.Graffito;
+import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
 import cristianorocchi.graffitiplatform.repositories.GraffitoRepository;
@@ -24,6 +25,7 @@ public class GraffitoService {
 
     @Autowired
     private Cloudinary cloudinaryUploader;
+    @Autowired UserService userService;
 
     public List<Graffito> findAll() {
         return graffitoRepository.findAll();
@@ -35,18 +37,44 @@ public class GraffitoService {
 
 
     //se vuoto è sconosciuto(Artista,annocreazione)
-    public Graffito save(Graffito graffito) {
+    public Graffito save(Graffito graffito, UUID userId) {
+        // Recupera l'utente autenticato corrente
+        User currentUser = userService.findById(userId);
+        graffito.setUser(currentUser);
 
+        // Gestione del valore "Sconosciuto" per artista e anno di creazione
         if (graffito.getArtista() == null || graffito.getArtista().trim().isEmpty()) {
             graffito.setArtista("Sconosciuto");
         }
-
-
         if (graffito.getAnnoCreazione() == null || graffito.getAnnoCreazione().trim().isEmpty()) {
             graffito.setAnnoCreazione("Sconosciuto");
         }
 
         return graffitoRepository.save(graffito);
+    }
+
+
+
+    public Graffito update(UUID id, Graffito updatedGraffito) {
+        Graffito existingGraffito = graffitoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Graffito non trovato"));
+
+        // Aggiorna i campi
+        existingGraffito.setArtista(updatedGraffito.getArtista());
+        existingGraffito.setLuogo(updatedGraffito.getLuogo());
+        existingGraffito.setImmagineUrl(updatedGraffito.getImmagineUrl());
+        existingGraffito.setStato(updatedGraffito.getStato());
+        existingGraffito.setAnnoCreazione(updatedGraffito.getAnnoCreazione());
+
+        return graffitoRepository.save(existingGraffito);
+    }
+
+    // Metodo per verificare se l'utente è il proprietario del graffito
+    public boolean isGraffitoOwner(UUID graffitoId, UUID userId) {
+        Graffito graffito = graffitoRepository.findById(graffitoId)
+                .orElseThrow(() -> new NotFoundException("Graffito non trovato"));
+
+        return graffito.getUser().getId().equals(userId);
     }
 
     public void deleteById(UUID id) {

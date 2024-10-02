@@ -1,10 +1,14 @@
 package cristianorocchi.graffitiplatform.controller;
 
 import cristianorocchi.graffitiplatform.entities.Tag;
+import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,7 +36,21 @@ public class TagController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Tag createTag(@RequestBody Tag tag) {
+        // Ottieni l'utente corrente dal contesto di sicurezza
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+
+        // Associa l'utente corrente al tag
+        tag.setUser(currentUser);
+
+        // Salva il tag
         return tagService.save(tag);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @tagService.isTagOwner(#id, authentication.principal.id)")
+    public Tag updateTag(@PathVariable UUID id, @RequestBody Tag updatedTag) {
+        return tagService.update(id, updatedTag);
     }
 
     @DeleteMapping("/{id}")

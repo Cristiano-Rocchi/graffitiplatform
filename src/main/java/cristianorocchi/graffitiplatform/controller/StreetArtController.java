@@ -2,10 +2,13 @@ package cristianorocchi.graffitiplatform.controller;
 
 
 import cristianorocchi.graffitiplatform.entities.StreetArt;
+import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.services.StreetArtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,9 +35,15 @@ public class StreetArtController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public StreetArt createStreetArt(@RequestBody StreetArt streetArt) {
-        return streetArtService.save(streetArt);
+    public StreetArt createStreetArt(@RequestBody StreetArt streetArt, @AuthenticationPrincipal User user) {
+        return streetArtService.save(streetArt, user.getId());
     }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @streetArtService.isStreetArtOwner(#id, authentication.principal.id)")
+    public StreetArt updateStreetArt(@PathVariable UUID id, @RequestBody StreetArt updatedStreetArt) {
+        return streetArtService.update(id, updatedStreetArt);
+    }
+
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

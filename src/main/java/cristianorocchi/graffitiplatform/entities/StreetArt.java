@@ -35,4 +35,8 @@ public class StreetArt {
 
     @Column
     private String annoCreazione;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

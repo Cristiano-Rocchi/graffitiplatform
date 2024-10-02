@@ -1,11 +1,5 @@
 package cristianorocchi.graffitiplatform.services;
 
-
-
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-
-
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
@@ -13,11 +7,11 @@ import cristianorocchi.graffitiplatform.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,8 +20,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -85,12 +77,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
-
-
     // Trova un utente per username o email
     public User findByUsernameOrEmail(String usernameOrEmail) {
         return userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new NotFoundException("Utente con username/email " + usernameOrEmail + " non trovato"));
+    }
+
+    // Metodo per ottenere l'utente attualmente autenticato
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (User) authentication.getPrincipal();
     }
 }

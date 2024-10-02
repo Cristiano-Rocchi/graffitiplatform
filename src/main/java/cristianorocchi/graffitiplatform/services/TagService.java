@@ -6,6 +6,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
 import cristianorocchi.graffitiplatform.entities.Tag;
+import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
 import cristianorocchi.graffitiplatform.repositories.TagRepository;
@@ -26,6 +27,9 @@ public class TagService {
     @Autowired
     private Cloudinary cloudinaryUploader;
 
+    @Autowired
+    private UserService userService;
+
     public List<Tag> findAll() {
         return tagRepository.findAll();
     }
@@ -37,11 +41,15 @@ public class TagService {
 
     //se vuoto è sconosciuto(Artista,annocreazione)
     public Tag save(Tag tag) {
+        // Ottieni l'utente attualmente autenticato
+        User currentUser = userService.getCurrentUser();
+
+        // Assegna l'utente al tag
+        tag.setUser(currentUser);
 
         if (tag.getArtista() == null || tag.getArtista().trim().isEmpty()) {
             tag.setArtista("Sconosciuto");
         }
-
 
         if (tag.getAnnoCreazione() == null || tag.getAnnoCreazione().trim().isEmpty()) {
             tag.setAnnoCreazione("Sconosciuto");
@@ -49,6 +57,30 @@ public class TagService {
 
         return tagRepository.save(tag);
     }
+
+
+    public Tag update(UUID id, Tag updatedTag) {
+        Tag existingTag = tagRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Tag non trovato"));
+
+        // Aggiorna i campi
+        existingTag.setArtista(updatedTag.getArtista());
+        existingTag.setLuogo(updatedTag.getLuogo());
+        existingTag.setImmagineUrl(updatedTag.getImmagineUrl());
+        existingTag.setStato(updatedTag.getStato());
+        existingTag.setAnnoCreazione(updatedTag.getAnnoCreazione());
+
+        return tagRepository.save(existingTag);
+    }
+
+
+    public boolean isTagOwner(UUID tagId, UUID userId) {
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new NotFoundException("Tag non trovato"));
+
+        return tag.getUser().getId().equals(userId);
+    }
+
 
     public void deleteById(UUID id) {
         tagRepository.deleteById(id);

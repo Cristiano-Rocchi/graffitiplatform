@@ -4,6 +4,8 @@ package cristianorocchi.graffitiplatform.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import cristianorocchi.graffitiplatform.entities.StreetArt;
+import cristianorocchi.graffitiplatform.entities.Tag;
+import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
 import cristianorocchi.graffitiplatform.repositories.StreetArtRepository;
@@ -23,6 +25,7 @@ public class StreetArtService {
 
     @Autowired
     private Cloudinary cloudinaryUploader;
+    @Autowired UserService userService;
 
     public List<StreetArt> findAll() {
         return streetArtRepository.findAll();
@@ -34,19 +37,47 @@ public class StreetArtService {
 
 
     //se vuoto è sconosciuto(Artista,annocreazione)
-    public StreetArt save(StreetArt streetArt) {
+    public StreetArt save(StreetArt streetArt, UUID userId) {
+        // Recupera l'utente autenticato corrente
+        User currentUser = userService.findById(userId);
+        streetArt.setUser(currentUser);
 
+        // Gestione del valore "Sconosciuto" per artista e anno di creazione
         if (streetArt.getArtista() == null || streetArt.getArtista().trim().isEmpty()) {
             streetArt.setArtista("Sconosciuto");
         }
-
-
         if (streetArt.getAnnoCreazione() == null || streetArt.getAnnoCreazione().trim().isEmpty()) {
             streetArt.setAnnoCreazione("Sconosciuto");
         }
 
         return streetArtRepository.save(streetArt);
     }
+
+
+    public boolean isStreetArtOwner(UUID streetArtId, UUID userId) {
+        StreetArt streetArt = streetArtRepository.findById(streetArtId)
+                .orElseThrow(() -> new NotFoundException("Street Art non trovata"));
+
+        return streetArt.getUser().getId().equals(userId);
+    }
+
+
+
+    public StreetArt update(UUID id, StreetArt updatedStreetArt) {
+        StreetArt existingStreetArt = streetArtRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Opera di street art non trovata"));
+
+        // Aggiorna i campi
+        existingStreetArt.setArtista(updatedStreetArt.getArtista());
+        existingStreetArt.setLuogo(updatedStreetArt.getLuogo());
+        existingStreetArt.setImmagineUrl(updatedStreetArt.getImmagineUrl());
+        existingStreetArt.setStato(updatedStreetArt.getStato());
+        existingStreetArt.setAnnoCreazione(updatedStreetArt.getAnnoCreazione());
+
+        return streetArtRepository.save(existingStreetArt);
+    }
+
+
 
     public void deleteById(UUID id) {
         streetArtRepository.deleteById(id);
