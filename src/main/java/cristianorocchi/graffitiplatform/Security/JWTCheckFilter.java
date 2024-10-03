@@ -1,6 +1,5 @@
 package cristianorocchi.graffitiplatform.Security;
 
-
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.UnauthorizedException;
 import cristianorocchi.graffitiplatform.services.UserService;
@@ -45,6 +44,11 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         String id = jwtTools.extractIdFromToken(accessToken);
         User currentUser = userService.findById(UUID.fromString(id));
 
+        // Aggiungi log per verificare l'utente corrente e i suoi ruoli
+        System.out.println("Token ID: " + id);
+        System.out.println("Current user: " + currentUser.getUsername());
+        System.out.println("Current user roles: " + currentUser.getAuthorities());
+
         Authentication authentication = new UsernamePasswordAuthenticationToken(currentUser, null, currentUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -56,4 +60,3 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         return new AntPathMatcher().match("/auth/**", request.getServletPath());
     }
 }
-

@@ -50,7 +50,7 @@ public class AuthController {
             user.setUsername(body.username());
             user.setEmail(body.email());
             user.setPassword(body.password());
-            user.setRuolo(Ruolo.USER);  // Imposta il ruolo come USER di default
+            user.setRuolo(Ruolo.USER);
 
             // Salva il nuovo utente
             User savedUser = this.userService.save(user);
