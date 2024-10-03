@@ -88,4 +88,20 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
     }
+
+    // Aggiorna l'utente attualmente autenticato
+    public User updateCurrentUser(User updatedData) {
+        User currentUser = getCurrentUser();
+
+        // Aggiorna i campi dell'utente
+        currentUser.setUsername(updatedData.getUsername());
+        currentUser.setEmail(updatedData.getEmail());
+
+        if (updatedData.getPassword() != null && !updatedData.getPassword().isEmpty()) {
+            currentUser.setPassword(passwordEncoder.encode(updatedData.getPassword()));
+        }
+
+        return userRepository.save(currentUser);
+    }
+
 }
