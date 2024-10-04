@@ -42,7 +42,7 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> getAllUsers(Authentication authentication) {
-        System.out.println("Ruoli dell'utente autenticato: " + authentication.getAuthorities());
+
         return userService.findAll();
     }
 
