@@ -103,4 +103,17 @@ public class StreetArtService {
 
         return streetArtRepository.save(streetArt);
     }
+
+
+    //RICERCHE
+
+    // Ricerca per nome dell'artista
+    public List<StreetArt> searchByArtista(String artista) {
+        return streetArtRepository.findByArtista(artista);
+    }
+
+    // Ricerca per anno di creazione
+    public List<StreetArt> searchByAnnoCreazione(String annoCreazione) {
+        return streetArtRepository.findByAnnoCreazione(annoCreazione);
+    }
 }

@@ -104,5 +104,19 @@ public class TagService {
 
         return tagRepository.save(tag);
     }
+
+
+
+    //RICERCHE
+
+    // Ricerca per nome dell'artista
+    public List<Tag> searchByArtista(String artista) {
+        return tagRepository.findByArtista(artista);
+    }
+
+    // Ricerca per anno di creazione
+    public List<Tag> searchByAnnoCreazione(String annoCreazione) {
+        return tagRepository.findByAnnoCreazione(annoCreazione);
+    }
 }
 

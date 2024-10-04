@@ -71,4 +71,16 @@ public class TagController {
         }
         return tagService.uploadImage(id, file);
     }
+
+    //ricerca per artista
+    @GetMapping("/search/artista")
+    public List<Tag> searchByArtista(@RequestParam("artista") String artista) {
+        return tagService.searchByArtista(artista);
+    }
+
+    // Ricerca per anno di creazione
+    @GetMapping("/search/anno")
+    public List<Tag> searchByAnnoCreazione(@RequestParam("annoCreazione") String annoCreazione) {
+        return tagService.searchByAnnoCreazione(annoCreazione);
+    }
 }

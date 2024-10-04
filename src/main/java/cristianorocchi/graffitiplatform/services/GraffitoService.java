@@ -101,4 +101,16 @@ public class GraffitoService {
 
         return graffitoRepository.save(graffito);
     }
+
+    //ricerche
+
+    // Ricerca per nome dell'artista
+    public List<Graffito> searchByArtista(String artista) {
+        return graffitoRepository.findByArtista(artista);
+    }
+
+    // Ricerca per anno di creazione
+    public List<Graffito> searchByAnnoCreazione(String annoCreazione) {
+        return graffitoRepository.findByAnnoCreazione(annoCreazione);
+    }
 }

@@ -71,4 +71,16 @@ public class GraffitoController {
         }
         return graffitoService.uploadImage(id, file);
     }
+
+
+    @GetMapping("/search/artista")
+    public List<Graffito> searchByArtista(@RequestParam("artista") String artista) {
+        return graffitoService.searchByArtista(artista);
+    }
+
+    // Ricerca per anno di creazione
+    @GetMapping("/search/anno")
+    public List<Graffito> searchByAnnoCreazione(@RequestParam("annoCreazione") String annoCreazione) {
+        return graffitoService.searchByAnnoCreazione(annoCreazione);
+    }
 }
