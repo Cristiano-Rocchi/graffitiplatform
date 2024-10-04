@@ -1,9 +1,7 @@
 package cristianorocchi.graffitiplatform.services;
 
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-
 import cristianorocchi.graffitiplatform.entities.Graffito;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Year;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,41 +24,49 @@ public class GraffitoService {
 
     @Autowired
     private Cloudinary cloudinaryUploader;
-    @Autowired UserService userService;
+
+    @Autowired
+    private UserService userService;
 
     public List<Graffito> findAll() {
         return graffitoRepository.findAll();
     }
 
     public Graffito findById(UUID id) {
-        return graffitoRepository.findById(id).orElseThrow(() -> new NotFoundException("Graffito non trovato"));
+        return graffitoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Graffito non trovato"));
     }
 
-
-    //se vuoto è sconosciuto(Artista,annocreazione)
+    // Metodo per salvare un nuovo graffito
     public Graffito save(Graffito graffito, UUID userId) {
         // Recupera l'utente autenticato corrente
         User currentUser = userService.findById(userId);
         graffito.setUser(currentUser);
 
-        // Gestione del valore "Sconosciuto" per artista e anno di creazione
+        // Verifica l'anno di creazione
+        validateAnnoCreazione(graffito.getAnnoCreazione());
+
+        // Gestione del valore "Sconosciuto" per artista
         if (graffito.getArtista() == null || graffito.getArtista().trim().isEmpty()) {
             graffito.setArtista("Sconosciuto");
         }
-        if (graffito.getAnnoCreazione() == null || graffito.getAnnoCreazione().trim().isEmpty()) {
-            graffito.setAnnoCreazione("Sconosciuto");
+
+        // Se l'anno di creazione non è specificato, impostalo come "Sconosciuto"
+        if (graffito.getAnnoCreazione() == 0) {
+            graffito.setAnnoCreazione(0); // Imposta 0 come "Sconosciuto" per un anno non specificato
         }
 
         // Salva e restituisce l'oggetto graffito
         return graffitoRepository.save(graffito);
     }
 
-
-
-
+    // Metodo per aggiornare un graffito esistente
     public Graffito update(UUID id, Graffito updatedGraffito) {
         Graffito existingGraffito = graffitoRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Graffito non trovato"));
+
+        // Verifica l'anno di creazione
+        validateAnnoCreazione(updatedGraffito.getAnnoCreazione());
 
         // Aggiorna i campi
         existingGraffito.setArtista(updatedGraffito.getArtista());
@@ -79,6 +86,7 @@ public class GraffitoService {
         return graffito.getUser().getId().equals(userId);
     }
 
+    // Metodo per eliminare un graffito per ID
     public void deleteById(UUID id) {
         graffitoRepository.deleteById(id);
     }
@@ -102,15 +110,21 @@ public class GraffitoService {
         return graffitoRepository.save(graffito);
     }
 
-    //ricerche
-
     // Ricerca per nome dell'artista
     public List<Graffito> searchByArtista(String artista) {
         return graffitoRepository.findByArtista(artista);
     }
 
     // Ricerca per anno di creazione
-    public List<Graffito> searchByAnnoCreazione(String annoCreazione) {
+    public List<Graffito> searchByAnnoCreazione(int annoCreazione) {
         return graffitoRepository.findByAnnoCreazione(annoCreazione);
+    }
+
+    // Metodo per validare l'anno di creazione
+    private void validateAnnoCreazione(int annoCreazione) {
+        int currentYear = Year.now().getValue();
+        if (annoCreazione > currentYear) {
+            throw new BadRequestException("L'anno di creazione non può essere successivo all'anno corrente.");
+        }
     }
 }

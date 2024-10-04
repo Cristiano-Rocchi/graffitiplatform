@@ -1,6 +1,5 @@
 package cristianorocchi.graffitiplatform.repositories;
 
-
 import cristianorocchi.graffitiplatform.entities.StreetArt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,13 +12,11 @@ import java.util.UUID;
 @Repository
 public interface StreetArtRepository extends JpaRepository<StreetArt, UUID> {
 
-
-
     // Filtra per nome dell'artista
     @Query("SELECT s FROM StreetArt s WHERE LOWER(s.artista) LIKE LOWER(CONCAT('%', :artista, '%'))")
     List<StreetArt> findByArtista(@Param("artista") String artista);
 
-    // Filtra per anno di creazione
+    // Filtra per anno di creazione come int
     @Query("SELECT s FROM StreetArt s WHERE s.annoCreazione = :annoCreazione")
-    List<StreetArt> findByAnnoCreazione(@Param("annoCreazione") String annoCreazione);
+    List<StreetArt> findByAnnoCreazione(@Param("annoCreazione") int annoCreazione);
 }

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,14 +36,13 @@ public class TagController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Tag createTag(@RequestBody Tag tag) {
-        // Ottieni l'utente corrente dal contesto di sicurezza
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
 
         // Associa l'utente corrente al tag
         tag.setUser(currentUser);
 
-        // Salva il tag passando anche l'ID dell'utente
+        // Passa anche l'ID dell'utente
         return tagService.save(tag, currentUser.getId());
     }
 
@@ -72,7 +70,7 @@ public class TagController {
         return tagService.uploadImage(id, file);
     }
 
-    //ricerca per artista
+    // Ricerca per artista
     @GetMapping("/search/artista")
     public List<Tag> searchByArtista(@RequestParam("artista") String artista) {
         return tagService.searchByArtista(artista);
@@ -81,6 +79,11 @@ public class TagController {
     // Ricerca per anno di creazione
     @GetMapping("/search/anno")
     public List<Tag> searchByAnnoCreazione(@RequestParam("annoCreazione") String annoCreazione) {
-        return tagService.searchByAnnoCreazione(annoCreazione);
+        try {
+            int anno = Integer.parseInt(annoCreazione);
+            return tagService.searchByAnnoCreazione(anno);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("L'anno di creazione deve essere un numero valido.");
+        }
     }
 }

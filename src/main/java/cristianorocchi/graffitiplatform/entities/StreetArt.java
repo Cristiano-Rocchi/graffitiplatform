@@ -1,6 +1,5 @@
 package cristianorocchi.graffitiplatform.entities;
 
-
 import cristianorocchi.graffitiplatform.enums.StatoOpera;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,7 +33,7 @@ public class StreetArt {
     private StatoOpera stato;
 
     @Column
-    private String annoCreazione;
+    private int annoCreazione;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

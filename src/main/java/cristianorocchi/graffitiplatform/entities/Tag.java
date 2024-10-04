@@ -33,7 +33,7 @@ public class Tag {
     private StatoOpera stato;
 
     @Column
-    private String annoCreazione;
+    private int annoCreazione;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

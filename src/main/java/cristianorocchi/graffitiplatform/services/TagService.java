@@ -1,10 +1,7 @@
 package cristianorocchi.graffitiplatform.services;
 
-
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-
 import cristianorocchi.graffitiplatform.entities.Tag;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Year;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,33 +33,40 @@ public class TagService {
     }
 
     public Tag findById(UUID id) {
-        return tagRepository.findById(id).orElseThrow(() -> new NotFoundException("Tag non trovato"));
+        return tagRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Tag non trovato"));
     }
 
-
-    //se vuoto è sconosciuto(Artista,annocreazione)
+    // Metodo per salvare un nuovo tag
     public Tag save(Tag tag, UUID userId) {
         // Recupera l'utente autenticato corrente
         User currentUser = userService.findById(userId);
         tag.setUser(currentUser);
 
-        // Gestione del valore "Sconosciuto" per artista e anno di creazione
+        // Verifica l'anno di creazione
+        validateAnnoCreazione(tag.getAnnoCreazione());
+
+        // Gestione del valore "Sconosciuto" per artista
         if (tag.getArtista() == null || tag.getArtista().trim().isEmpty()) {
             tag.setArtista("Sconosciuto");
         }
-        if (tag.getAnnoCreazione() == null || tag.getAnnoCreazione().trim().isEmpty()) {
-            tag.setAnnoCreazione("Sconosciuto");
+
+        // Se l'anno di creazione non è specificato, impostalo come "Sconosciuto"
+        if (tag.getAnnoCreazione() == 0) {
+            tag.setAnnoCreazione(0); // Imposta 0 come "Sconosciuto" per un anno non specificato
         }
 
         // Salva e restituisce l'oggetto tag
         return tagRepository.save(tag);
     }
 
-
-
+    // Metodo per aggiornare un tag esistente
     public Tag update(UUID id, Tag updatedTag) {
         Tag existingTag = tagRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Tag non trovato"));
+
+        // Verifica l'anno di creazione
+        validateAnnoCreazione(updatedTag.getAnnoCreazione());
 
         // Aggiorna i campi
         existingTag.setArtista(updatedTag.getArtista());
@@ -73,7 +78,7 @@ public class TagService {
         return tagRepository.save(existingTag);
     }
 
-
+    // Metodo per verificare se l'utente è il proprietario del tag
     public boolean isTagOwner(UUID tagId, UUID userId) {
         Tag tag = tagRepository.findById(tagId)
                 .orElseThrow(() -> new NotFoundException("Tag non trovato"));
@@ -81,12 +86,12 @@ public class TagService {
         return tag.getUser().getId().equals(userId);
     }
 
-
+    // Metodo per eliminare un tag per ID
     public void deleteById(UUID id) {
         tagRepository.deleteById(id);
     }
 
-    // Upload immagine per il tag
+    // Upload immagine per un tag
     public Tag uploadImage(UUID tagId, MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new BadRequestException("Immagine obbligatoria.");
@@ -105,18 +110,21 @@ public class TagService {
         return tagRepository.save(tag);
     }
 
-
-
-    //RICERCHE
-
     // Ricerca per nome dell'artista
     public List<Tag> searchByArtista(String artista) {
         return tagRepository.findByArtista(artista);
     }
 
     // Ricerca per anno di creazione
-    public List<Tag> searchByAnnoCreazione(String annoCreazione) {
+    public List<Tag> searchByAnnoCreazione(int annoCreazione) {
         return tagRepository.findByAnnoCreazione(annoCreazione);
     }
-}
 
+    // Metodo per validare l'anno di creazione
+    private void validateAnnoCreazione(int annoCreazione) {
+        int currentYear = Year.now().getValue();
+        if (annoCreazione > currentYear) {
+            throw new BadRequestException("L'anno di creazione non può essere successivo all'anno corrente.");
+        }
+    }
+}

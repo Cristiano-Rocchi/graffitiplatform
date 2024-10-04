@@ -81,6 +81,11 @@ public class GraffitoController {
     // Ricerca per anno di creazione
     @GetMapping("/search/anno")
     public List<Graffito> searchByAnnoCreazione(@RequestParam("annoCreazione") String annoCreazione) {
-        return graffitoService.searchByAnnoCreazione(annoCreazione);
+        try {
+            int anno = Integer.parseInt(annoCreazione);
+            return graffitoService.searchByAnnoCreazione(anno);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("L'anno di creazione deve essere un numero valido.");
+        }
     }
 }

@@ -5,11 +5,9 @@ import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.services.StreetArtService;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,8 +70,6 @@ public class StreetArtController {
         return streetArtService.uploadImage(id, file);
     }
 
-
-
     // Ricerca per artista
     @GetMapping("/search/artista")
     public List<StreetArt> searchByArtista(@RequestParam("artista") String artista) {
@@ -83,7 +79,11 @@ public class StreetArtController {
     // Ricerca per anno di creazione
     @GetMapping("/search/anno")
     public List<StreetArt> searchByAnnoCreazione(@RequestParam("annoCreazione") String annoCreazione) {
-        return streetArtService.searchByAnnoCreazione(annoCreazione);
+        try {
+            int anno = Integer.parseInt(annoCreazione);
+            return streetArtService.searchByAnnoCreazione(anno);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("L'anno di creazione deve essere un numero valido.");
+        }
     }
-
 }

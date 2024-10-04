@@ -1,6 +1,5 @@
 package cristianorocchi.graffitiplatform.repositories;
 
-
 import cristianorocchi.graffitiplatform.entities.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,8 +16,7 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
     @Query("SELECT t FROM Tag t WHERE LOWER(t.artista) LIKE LOWER(CONCAT('%', :artista, '%'))")
     List<Tag> findByArtista(@Param("artista") String artista);
 
-    // Filtra per anno di creazione
+    // Filtra per anno di creazione come int
     @Query("SELECT t FROM Tag t WHERE t.annoCreazione = :annoCreazione")
-    List<Tag> findByAnnoCreazione(@Param("annoCreazione") String annoCreazione);
+    List<Tag> findByAnnoCreazione(@Param("annoCreazione") int annoCreazione);
 }
-
