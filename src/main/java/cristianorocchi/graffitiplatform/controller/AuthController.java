@@ -31,7 +31,8 @@ public class AuthController {
     // Endpoint per il login
     @PostMapping("/login")
     public UserLoginRespDTO login(@RequestBody UserLoginDTO payload) {
-        return new UserLoginRespDTO(this.authService.checkCredentialsAndGenerateToken(payload));
+        // Chiama il servizio di autenticazione e restituisci il token insieme allo username
+        return this.authService.checkCredentialsAndGenerateToken(payload);
     }
 
     // Endpoint per la registrazione

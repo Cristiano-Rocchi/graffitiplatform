@@ -2,5 +2,5 @@ package cristianorocchi.graffitiplatform.payloads;
 
 
 
-public record UserLoginRespDTO(String token) {
+public record UserLoginRespDTO(String token, String username) {
 }
