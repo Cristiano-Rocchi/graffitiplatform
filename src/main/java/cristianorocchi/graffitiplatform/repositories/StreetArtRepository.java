@@ -1,6 +1,7 @@
 package cristianorocchi.graffitiplatform.repositories;
 
 import cristianorocchi.graffitiplatform.entities.StreetArt;
+import cristianorocchi.graffitiplatform.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +20,6 @@ public interface StreetArtRepository extends JpaRepository<StreetArt, UUID> {
     // Filtra per anno di creazione come int
     @Query("SELECT s FROM StreetArt s WHERE s.annoCreazione = :annoCreazione")
     List<StreetArt> findByAnnoCreazione(@Param("annoCreazione") int annoCreazione);
+
+    List<StreetArt> findByUser(User user); // Filtra opere di street art per utente
 }

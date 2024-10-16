@@ -127,4 +127,7 @@ public class GraffitoService {
             throw new BadRequestException("L'anno di creazione non può essere successivo all'anno corrente.");
         }
     }
+    public List<Graffito> getImagesByUser(User user) {
+        return graffitoRepository.findByUser(user);
+    }
 }

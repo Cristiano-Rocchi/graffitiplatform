@@ -86,4 +86,9 @@ public class StreetArtController {
             throw new BadRequestException("L'anno di creazione deve essere un numero valido.");
         }
     }
+    @GetMapping("/user-images")
+    public List<StreetArt> getUserStreetArtImages(Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        return streetArtService.getImagesByUser(currentUser); // Usa il servizio specifico per StreetArt
+    }
 }

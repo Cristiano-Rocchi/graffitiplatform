@@ -127,4 +127,7 @@ public class StreetArtService {
             throw new BadRequestException("L'anno di creazione non può essere successivo all'anno corrente.");
         }
     }
+    public List<StreetArt> getImagesByUser(User user) {
+        return streetArtRepository.findByUser(user);
+    }
 }

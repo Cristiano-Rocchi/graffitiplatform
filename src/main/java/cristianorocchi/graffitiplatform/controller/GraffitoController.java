@@ -88,4 +88,9 @@ public class GraffitoController {
             throw new BadRequestException("L'anno di creazione deve essere un numero valido.");
         }
     }
+    @GetMapping("/user-images")
+    public List<Graffito> getUserImages(Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        return graffitoService.getImagesByUser(currentUser);
+    }
 }

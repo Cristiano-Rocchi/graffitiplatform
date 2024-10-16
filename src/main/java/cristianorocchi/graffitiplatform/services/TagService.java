@@ -127,4 +127,7 @@ public class TagService {
             throw new BadRequestException("L'anno di creazione non può essere successivo all'anno corrente.");
         }
     }
+    public List<Tag> getImagesByUser(User user) {
+        return tagRepository.findByUser(user);
+    }
 }

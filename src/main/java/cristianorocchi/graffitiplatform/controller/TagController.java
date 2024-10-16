@@ -86,4 +86,9 @@ public class TagController {
             throw new BadRequestException("L'anno di creazione deve essere un numero valido.");
         }
     }
+    @GetMapping("/user-images")
+    public List<Tag> getUserTagImages(Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        return tagService.getImagesByUser(currentUser); // Usa il servizio specifico per Tag
+    }
 }

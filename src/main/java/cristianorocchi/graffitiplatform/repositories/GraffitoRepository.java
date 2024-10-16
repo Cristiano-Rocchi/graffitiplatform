@@ -1,6 +1,7 @@
 package cristianorocchi.graffitiplatform.repositories;
 
 import cristianorocchi.graffitiplatform.entities.Graffito;
+import cristianorocchi.graffitiplatform.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +21,6 @@ public interface GraffitoRepository extends JpaRepository<Graffito, UUID> {
     @Query("SELECT g FROM Graffito g WHERE g.annoCreazione = :annoCreazione")
     List<Graffito> findByAnnoCreazione(@Param("annoCreazione") int annoCreazione);
 
+    // Filtra i graffiti per utente
+    List<Graffito> findByUser(User user);
 }
