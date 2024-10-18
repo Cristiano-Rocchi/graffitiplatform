@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -66,5 +67,10 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public User updateUser(@PathVariable UUID userId, @RequestBody User updatedData) {
         return userService.updateUser(userId, updatedData);
+    }
+    //  conteggio delle immagini caricate dall'utente
+    @GetMapping("/me/stats")
+    public Map<String, Long> getUserImageStats(@AuthenticationPrincipal User currentUser) {
+        return userService.getUserImageStats(currentUser);
     }
 }

@@ -3,6 +3,9 @@ package cristianorocchi.graffitiplatform.services;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
+import cristianorocchi.graffitiplatform.repositories.GraffitoRepository;
+import cristianorocchi.graffitiplatform.repositories.StreetArtRepository;
+import cristianorocchi.graffitiplatform.repositories.TagRepository;
 import cristianorocchi.graffitiplatform.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,12 +15,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class UserService {
 
+    @Autowired
+    private GraffitoRepository graffitoRepository;
+    @Autowired
+    private StreetArtRepository streetArtRepository;
+    @Autowired
+    private TagRepository tagRepository;
     @Autowired
     private UserRepository userRepository;
 
@@ -103,5 +114,14 @@ public class UserService {
 
         return userRepository.save(currentUser);
     }
+
+    public Map<String, Long> getUserImageStats(User user) {
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("graffitiCount", graffitoRepository.countByUser(user));
+        stats.put("streetArtCount", streetArtRepository.countByUser(user));
+        stats.put("tagCount", tagRepository.countByUser(user));
+        return stats;
+    }
+
 
 }

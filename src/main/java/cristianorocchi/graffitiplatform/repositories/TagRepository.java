@@ -20,6 +20,10 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
     // Filtra per anno di creazione come int
     @Query("SELECT t FROM Tag t WHERE t.annoCreazione = :annoCreazione")
     List<Tag> findByAnnoCreazione(@Param("annoCreazione") int annoCreazione);
+    // Filtra i tag per utente
+    List<Tag> findByUser(User user);
+    // Conta i tag caricati dall'utente
+    @Query("SELECT COUNT(t) FROM Tag t WHERE t.user = :user")
+    long countByUser(@Param("user") User user);
 
-    List<Tag> findByUser(User user); // Filtra i tag per utente
 }

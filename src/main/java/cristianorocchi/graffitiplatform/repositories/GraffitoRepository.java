@@ -23,4 +23,9 @@ public interface GraffitoRepository extends JpaRepository<Graffito, UUID> {
 
     // Filtra i graffiti per utente
     List<Graffito> findByUser(User user);
+
+    // Conta i graffiti caricati dall'utente
+    @Query("SELECT COUNT(g) FROM Graffito g WHERE g.user = :user")
+    long countByUser(@Param("user") User user);
+
 }

@@ -20,6 +20,10 @@ public interface StreetArtRepository extends JpaRepository<StreetArt, UUID> {
     // Filtra per anno di creazione come int
     @Query("SELECT s FROM StreetArt s WHERE s.annoCreazione = :annoCreazione")
     List<StreetArt> findByAnnoCreazione(@Param("annoCreazione") int annoCreazione);
+    // Filtra  street art per utente
+    List<StreetArt> findByUser(User user);
+    // Conta le opere di street art caricate dall'utente
+    @Query("SELECT COUNT(s) FROM StreetArt s WHERE s.user = :user")
+    long countByUser(@Param("user") User user);
 
-    List<StreetArt> findByUser(User user); // Filtra opere di street art per utente
 }
