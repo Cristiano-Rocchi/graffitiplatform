@@ -34,8 +34,8 @@ public class AuthService {
             // 2. Se le credenziali sono corrette, genero un token JWT
             String token = jwtTools.createToken(found);
 
-            // 3. Restituisci un oggetto con token e username
-            return new UserLoginRespDTO(token, found.getUsername());
+            // 3. Restituisci un oggetto con token, username e email
+            return new UserLoginRespDTO(token, found.getUsername(), found.getEmail()); // Aggiunto found.getEmail()
         } else {
             // 4. Se le credenziali sono errate, restituisco un 401 (Unauthorized)
             throw new UnauthorizedException("Credenziali errate!");
