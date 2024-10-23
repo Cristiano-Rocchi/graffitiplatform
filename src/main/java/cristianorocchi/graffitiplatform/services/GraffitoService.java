@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.Year;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class GraffitoService {
@@ -27,6 +30,12 @@ public class GraffitoService {
 
     @Autowired
     private UserService userService;
+
+    // Cache delle immagini random
+    private List<Graffito> cachedRandomImages;
+
+    // Data dell'ultimo aggiornamento della cache
+    private LocalDate lastUpdate;
 
     public List<Graffito> findAll() {
         return graffitoRepository.findAll();
@@ -129,5 +138,23 @@ public class GraffitoService {
     }
     public List<Graffito> getImagesByUser(User user) {
         return graffitoRepository.findByUser(user);
+    }
+
+
+    // Metodo per generare 12 immagini casuali che cambiano mensilmente
+    public List<Graffito> findRandomGraffiti(int limit) {
+        if (cachedRandomImages == null || shouldUpdateCache()) {
+            // Se la cache è vuota o se è passato un mese dall'ultimo aggiornamento, ricarica
+            List<Graffito> allGraffiti = graffitoRepository.findAll();
+            Collections.shuffle(allGraffiti);  // Mescola le immagini
+            cachedRandomImages = allGraffiti.stream().limit(limit).collect(Collectors.toList());
+            lastUpdate = LocalDate.now();  // Aggiorna la data di aggiornamento
+        }
+        return cachedRandomImages;
+    }
+
+    // Metodo per verificare se è passato un mese dall'ultimo aggiornamento della cache
+    private boolean shouldUpdateCache() {
+        return lastUpdate == null || lastUpdate.plusMonths(1).isBefore(LocalDate.now());
     }
 }

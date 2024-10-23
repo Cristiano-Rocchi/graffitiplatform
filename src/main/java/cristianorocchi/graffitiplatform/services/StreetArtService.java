@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.Year;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class StreetArtService {
@@ -27,6 +30,9 @@ public class StreetArtService {
 
     @Autowired
     private UserService userService;
+
+    private List<StreetArt> cachedRandomImages;
+    private LocalDate lastUpdate;
 
     public List<StreetArt> findAll() {
         return streetArtRepository.findAll();
@@ -130,4 +136,19 @@ public class StreetArtService {
     public List<StreetArt> getImagesByUser(User user) {
         return streetArtRepository.findByUser(user);
     }
+
+    public List<StreetArt> findRandomStreetArt(int limit) {
+        if (cachedRandomImages == null || shouldUpdateCache()) {
+            List<StreetArt> allStreetArt = streetArtRepository.findAll();
+            Collections.shuffle(allStreetArt);
+            cachedRandomImages = allStreetArt.stream().limit(limit).collect(Collectors.toList());
+            lastUpdate = LocalDate.now();
+        }
+        return cachedRandomImages;
+    }
+
+    private boolean shouldUpdateCache() {
+        return lastUpdate == null || lastUpdate.plusMonths(1).isBefore(LocalDate.now());
+    }
 }
+

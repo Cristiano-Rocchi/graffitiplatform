@@ -91,4 +91,9 @@ public class TagController {
         User currentUser = (User) authentication.getPrincipal();
         return tagService.getImagesByUser(currentUser); // Usa il servizio specifico per Tag
     }
+
+    @GetMapping("/random")
+    public List<Tag> getRandomTags() {
+        return tagService.findRandomTags(12);
+    }
 }

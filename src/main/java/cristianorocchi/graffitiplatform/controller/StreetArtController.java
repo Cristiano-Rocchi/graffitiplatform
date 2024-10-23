@@ -91,4 +91,9 @@ public class StreetArtController {
         User currentUser = (User) authentication.getPrincipal();
         return streetArtService.getImagesByUser(currentUser); // Usa il servizio specifico per StreetArt
     }
+
+    @GetMapping("/random")
+    public List<StreetArt> getRandomStreetArt() {
+        return streetArtService.findRandomStreetArt(12);
+    }
 }

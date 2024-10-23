@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.Year;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TagService {
@@ -27,6 +30,11 @@ public class TagService {
 
     @Autowired
     private UserService userService;
+
+
+    private List<Tag> cachedRandomImages;
+    private LocalDate lastUpdate;
+
 
     public List<Tag> findAll() {
         return tagRepository.findAll();
@@ -129,5 +137,19 @@ public class TagService {
     }
     public List<Tag> getImagesByUser(User user) {
         return tagRepository.findByUser(user);
+    }
+
+    public List<Tag> findRandomTags(int limit) {
+        if (cachedRandomImages == null || shouldUpdateCache()) {
+            List<Tag> allTags = tagRepository.findAll();
+            Collections.shuffle(allTags);
+            cachedRandomImages = allTags.stream().limit(limit).collect(Collectors.toList());
+            lastUpdate = LocalDate.now();
+        }
+        return cachedRandomImages;
+    }
+
+    private boolean shouldUpdateCache() {
+        return lastUpdate == null || lastUpdate.plusMonths(1).isBefore(LocalDate.now());
     }
 }
