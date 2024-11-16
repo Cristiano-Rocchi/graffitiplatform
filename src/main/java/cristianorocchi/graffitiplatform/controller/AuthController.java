@@ -59,4 +59,5 @@ public class AuthController {
             return new NewUserRespDTO(savedUser.getId());
         }
     }
+
 }

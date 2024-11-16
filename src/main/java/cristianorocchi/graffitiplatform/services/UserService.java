@@ -3,6 +3,7 @@ package cristianorocchi.graffitiplatform.services;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
+import cristianorocchi.graffitiplatform.payloads.NewUserDTO;
 import cristianorocchi.graffitiplatform.repositories.GraffitoRepository;
 import cristianorocchi.graffitiplatform.repositories.StreetArtRepository;
 import cristianorocchi.graffitiplatform.repositories.TagRepository;
@@ -50,7 +51,7 @@ public class UserService {
         // Verifica che l'email o lo username non siano già in uso
         userRepository.findByUsernameOrEmail(user.getUsername(), user.getEmail()).ifPresent(
                 u -> {
-                    throw new BadRequestException("Lo username o l'email " + user.getEmail() + " è già in uso!");
+                    throw new BadRequestException("Lo username o l'email è già in uso!");
                 }
         );
 
@@ -60,6 +61,8 @@ public class UserService {
         // Salva l'utente nel database
         return userRepository.save(user);
     }
+
+
 
     // Trova un utente per ID
     public User findById(UUID userId) {
