@@ -28,9 +28,10 @@ public class GraffitoController {
     private GraffitoService graffitoService;
 
     @GetMapping
-    public List<Graffito> getAllGraffiti() {
-        return graffitoService.findAll();
+    public List<GraffitoRespDTO> getAllGraffiti() {
+        return graffitoService.findAllGraffitiWithUserDetails();
     }
+
 
     @GetMapping("/{id}")
     public Graffito getGraffitoById(@PathVariable UUID id) {
@@ -109,10 +110,7 @@ public class GraffitoController {
     public List<Graffito> getRandomGraffiti() {
         return graffitoService.findRandomGraffiti(12);
     }
-    @GetMapping("/user-details")
-    public List<GraffitoRespDTO> getAllGraffitiWithUserDetails() {
-        return graffitoService.findAllWithUserDetails();
-    }
+
 
 
 

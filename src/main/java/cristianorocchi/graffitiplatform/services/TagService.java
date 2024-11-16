@@ -6,6 +6,8 @@ import cristianorocchi.graffitiplatform.entities.Tag;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
+import cristianorocchi.graffitiplatform.payloads.StreetArtRespDTO;
+import cristianorocchi.graffitiplatform.payloads.TagRespDTO;
 import cristianorocchi.graffitiplatform.repositories.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,6 +88,19 @@ public class TagService {
         return tagRepository.save(existingTag);
     }
 
+    public List<TagRespDTO> findAllGraffitiWithUserDetails() {
+        return tagRepository.findAll().stream()
+                .map(Tag -> new TagRespDTO(
+                        Tag.getId(),
+                        Tag.getArtista(),
+                        Tag.getLuogo(),
+                        Tag.getImmagineUrl(),
+                        Tag.getStato(),
+                        Tag.getAnnoCreazione(),
+                        Tag.getUser().getUsername() // Aggiunge il nome utente
+                ))
+                .collect(Collectors.toList());
+    }
     // Metodo per verificare se l'utente è il proprietario del tag
     public boolean isTagOwner(UUID tagId, UUID userId) {
         Tag tag = tagRepository.findById(tagId)

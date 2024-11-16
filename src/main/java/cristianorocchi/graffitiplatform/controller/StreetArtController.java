@@ -3,7 +3,9 @@ package cristianorocchi.graffitiplatform.controller;
 import cristianorocchi.graffitiplatform.entities.StreetArt;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
+import cristianorocchi.graffitiplatform.payloads.GraffitoRespDTO;
 import cristianorocchi.graffitiplatform.payloads.NewStreetArtDTO;
+import cristianorocchi.graffitiplatform.payloads.StreetArtRespDTO;
 import cristianorocchi.graffitiplatform.services.StreetArtService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +28,9 @@ public class StreetArtController {
     private StreetArtService streetArtService;
 
     @GetMapping
-    public List<StreetArt> getAllStreetArt() {
-        return streetArtService.findAll();
+    public List<StreetArtRespDTO> getAllGraffiti() {
+        return streetArtService.findAllGraffitiWithUserDetails();
     }
-
     @GetMapping("/{id}")
     public StreetArt getStreetArtById(@PathVariable UUID id) {
         return streetArtService.findById(id);

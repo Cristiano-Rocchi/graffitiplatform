@@ -91,7 +91,9 @@ public class GraffitoService {
 
 
 
-    public List<GraffitoRespDTO> findAllWithUserDetails() {
+
+
+    public List<GraffitoRespDTO> findAllGraffitiWithUserDetails() {
         return graffitoRepository.findAll().stream()
                 .map(graffito -> new GraffitoRespDTO(
                         graffito.getId(),
@@ -100,10 +102,11 @@ public class GraffitoService {
                         graffito.getImmagineUrl(),
                         graffito.getStato(),
                         graffito.getAnnoCreazione(),
-                        graffito.getUser().getUsername() // Nome dell'utente associato
+                        graffito.getUser().getUsername() // Aggiunge il nome utente
                 ))
                 .collect(Collectors.toList());
     }
+
 
 
     // Metodo per verificare se l'utente è il proprietario del graffito

@@ -6,6 +6,7 @@ import cristianorocchi.graffitiplatform.entities.StreetArt;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
+import cristianorocchi.graffitiplatform.payloads.StreetArtRespDTO;
 import cristianorocchi.graffitiplatform.repositories.StreetArtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,6 +83,20 @@ public class StreetArtService {
         existingStreetArt.setAnnoCreazione(updatedStreetArt.getAnnoCreazione());
 
         return streetArtRepository.save(existingStreetArt);
+    }
+
+    public List<StreetArtRespDTO> findAllGraffitiWithUserDetails() {
+        return streetArtRepository.findAll().stream()
+                .map(streetArt -> new StreetArtRespDTO(
+                        streetArt.getId(),
+                        streetArt.getArtista(),
+                        streetArt.getLuogo(),
+                        streetArt.getImmagineUrl(),
+                        streetArt.getStato(),
+                        streetArt.getAnnoCreazione(),
+                        streetArt.getUser().getUsername() // Aggiunge il nome utente
+                ))
+                .collect(Collectors.toList());
     }
 
     // Metodo per verificare se l'utente è il proprietario della street art

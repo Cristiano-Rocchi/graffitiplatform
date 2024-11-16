@@ -3,7 +3,9 @@ package cristianorocchi.graffitiplatform.controller;
 import cristianorocchi.graffitiplatform.entities.Tag;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
+import cristianorocchi.graffitiplatform.payloads.GraffitoRespDTO;
 import cristianorocchi.graffitiplatform.payloads.NewTagDTO;
+import cristianorocchi.graffitiplatform.payloads.TagRespDTO;
 import cristianorocchi.graffitiplatform.services.TagService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,8 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping
-    public List<Tag> getAllTags() {
-        return tagService.findAll();
+    public List<TagRespDTO> getAllGraffiti() {
+        return tagService.findAllGraffitiWithUserDetails();
     }
 
     @GetMapping("/{id}")
