@@ -4,8 +4,10 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import cristianorocchi.graffitiplatform.entities.Graffito;
 import cristianorocchi.graffitiplatform.entities.User;
+import cristianorocchi.graffitiplatform.enums.Ruolo;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
+import cristianorocchi.graffitiplatform.payloads.GraffitoRespDTO;
 import cristianorocchi.graffitiplatform.repositories.GraffitoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,6 +89,23 @@ public class GraffitoService {
         return graffitoRepository.save(existingGraffito);
     }
 
+
+
+    public List<GraffitoRespDTO> findAllWithUserDetails() {
+        return graffitoRepository.findAll().stream()
+                .map(graffito -> new GraffitoRespDTO(
+                        graffito.getId(),
+                        graffito.getArtista(),
+                        graffito.getLuogo(),
+                        graffito.getImmagineUrl(),
+                        graffito.getStato(),
+                        graffito.getAnnoCreazione(),
+                        graffito.getUser().getUsername() // Nome dell'utente associato
+                ))
+                .collect(Collectors.toList());
+    }
+
+
     // Metodo per verificare se l'utente è il proprietario del graffito
     public boolean isGraffitoOwner(UUID graffitoId, UUID userId) {
         Graffito graffito = graffitoRepository.findById(graffitoId)
@@ -96,9 +115,22 @@ public class GraffitoService {
     }
 
     // Metodo per eliminare un graffito per ID
-    public void deleteById(UUID id) {
-        graffitoRepository.deleteById(id);
-    }
+    public void deleteById(UUID id, UUID requesterId) {
+        Graffito graffito = graffitoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Graffito non trovato"));
+
+        User requester = userService.findById(requesterId);
+
+        // Controlla se il richiedente è un admin o il proprietario del graffito
+        if (requester.getRuolo() == Ruolo.ADMIN || isGraffitoOwner(id, requesterId)) {
+            graffitoRepository.deleteById(id);
+        } else {
+            throw new BadRequestException("Non hai il permesso per eliminare questo graffito.");
+        }
+
+
+}
+
 
     // Upload immagine per un graffito
     public Graffito uploadImage(UUID graffitoId, MultipartFile file) throws IOException {

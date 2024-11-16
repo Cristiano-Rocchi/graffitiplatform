@@ -3,6 +3,7 @@ package cristianorocchi.graffitiplatform.controller;
 import cristianorocchi.graffitiplatform.entities.Graffito;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
+import cristianorocchi.graffitiplatform.payloads.GraffitoRespDTO;
 import cristianorocchi.graffitiplatform.payloads.NewGraffitoDTO;
 import cristianorocchi.graffitiplatform.services.GraffitoService;
 import jakarta.validation.Valid;
@@ -64,9 +65,10 @@ public class GraffitoController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @graffitoService.isGraffitoOwner(#id, authentication.principal.id)")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteGraffito(@PathVariable UUID id) {
-        graffitoService.deleteById(id);
+    public void deleteGraffito(@PathVariable UUID id, @AuthenticationPrincipal User currentUser) {
+        graffitoService.deleteById(id, currentUser.getId());
     }
+
 
     // Carica immagine per il graffito
     @PostMapping("/{id}/img")
@@ -107,5 +109,12 @@ public class GraffitoController {
     public List<Graffito> getRandomGraffiti() {
         return graffitoService.findRandomGraffiti(12);
     }
+    @GetMapping("/user-details")
+    public List<GraffitoRespDTO> getAllGraffitiWithUserDetails() {
+        return graffitoService.findAllWithUserDetails();
+    }
+
+
+
 
 }
