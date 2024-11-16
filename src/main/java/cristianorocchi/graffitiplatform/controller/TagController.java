@@ -3,7 +3,9 @@ package cristianorocchi.graffitiplatform.controller;
 import cristianorocchi.graffitiplatform.entities.Tag;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
+import cristianorocchi.graffitiplatform.payloads.NewTagDTO;
 import cristianorocchi.graffitiplatform.services.TagService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,11 +37,16 @@ public class TagController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Tag createTag(@RequestBody Tag tag) {
+    public Tag createTag(@Valid  @RequestBody NewTagDTO newTagDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
 
-        // Associa l'utente corrente al tag
+        Tag tag = new Tag();
+        tag.setLuogo(newTagDTO.luogo());
+        tag.setImmagineUrl(newTagDTO.immagineUrl());
+        tag.setStato(newTagDTO.stato());
+        tag.setArtista(newTagDTO.artista());
+        tag.setAnnoCreazione(newTagDTO.annoCreazione());
         tag.setUser(currentUser);
 
         // Passa anche l'ID dell'utente

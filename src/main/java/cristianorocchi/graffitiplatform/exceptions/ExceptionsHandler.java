@@ -54,5 +54,11 @@ public class ExceptionsHandler {
     public ErrorsPayload handleGenericException(Exception ex) {
         return new ErrorsPayload("Errore interno del server: " + ex.getMessage());
     }
+
+    @ExceptionHandler(NumberFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorsPayload handleNumberFormatException(NumberFormatException ex) {
+        return new ErrorsPayload("Errore di formattazione numerica: " + ex.getMessage());
+    }
 }
 

@@ -3,7 +3,9 @@ package cristianorocchi.graffitiplatform.controller;
 import cristianorocchi.graffitiplatform.entities.Graffito;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
+import cristianorocchi.graffitiplatform.payloads.NewGraffitoDTO;
 import cristianorocchi.graffitiplatform.services.GraffitoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,16 +38,21 @@ public class GraffitoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Graffito createGraffito(@RequestBody Graffito graffito) {
+    public Graffito createGraffito(@Valid @RequestBody NewGraffitoDTO newGraffitoDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
 
-        // Associa l'utente corrente al graffito
+        Graffito graffito = new Graffito();
+        graffito.setLuogo(newGraffitoDTO.luogo());
+        graffito.setImmagineUrl(newGraffitoDTO.immagineUrl());
+        graffito.setStato(newGraffitoDTO.stato());
+        graffito.setArtista(newGraffitoDTO.artista());
+        graffito.setAnnoCreazione(newGraffitoDTO.annoCreazione());
         graffito.setUser(currentUser);
 
-        // Passa anche l'ID dell'utente
         return graffitoService.save(graffito, currentUser.getId());
     }
+
 
 
     @PutMapping("/{id}")

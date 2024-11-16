@@ -3,7 +3,9 @@ package cristianorocchi.graffitiplatform.controller;
 import cristianorocchi.graffitiplatform.entities.StreetArt;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
+import cristianorocchi.graffitiplatform.payloads.NewStreetArtDTO;
 import cristianorocchi.graffitiplatform.services.StreetArtService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,16 +37,23 @@ public class StreetArtController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public StreetArt createStreetArt(@RequestBody StreetArt streetArt) {
+    public StreetArt createStreetArt(@Valid @RequestBody NewStreetArtDTO streetArtDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
 
-        // Associa l'utente corrente all'opera di street art
-        streetArt.setUser(currentUser);
+        // Trasforma il DTO in un oggetto StreetArt
+        StreetArt streetArt = new StreetArt();
+        streetArt.setLuogo(streetArtDTO.luogo());
+        streetArt.setImmagineUrl(streetArtDTO.immagineUrl());
+        streetArt.setStato(streetArtDTO.stato());
+        streetArt.setArtista(streetArtDTO.artista());
+        streetArt.setAnnoCreazione(streetArtDTO.annoCreazione());
+        streetArt.setUser(currentUser); // Associa l'utente autenticato
 
-        // Passa anche l'ID dell'utente
+        // Salva l'oggetto utilizzando il servizio
         return streetArtService.save(streetArt, currentUser.getId());
     }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @streetArtService.isStreetArtOwner(#id, authentication.principal.id)")

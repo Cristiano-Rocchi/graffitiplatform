@@ -17,7 +17,7 @@ public record NewGraffitoDTO(
         @NotNull(message = "Lo stato dell'opera è obbligatorio")
         StatoOpera stato,
 
-        @Size(max = 20, message = "Il nome dell'artista non può superare i 20 caratteri")
+        @Size(max = 15, message = "Il nome dell'artista non può superare i 15 caratteri")
         String artista,
 
         @Min(value = 1975, message = "L'anno di creazione non può essere inferiore al 1975")
