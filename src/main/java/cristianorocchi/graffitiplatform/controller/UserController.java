@@ -1,6 +1,7 @@
 package cristianorocchi.graffitiplatform.controller;
 
 import cristianorocchi.graffitiplatform.entities.User;
+import cristianorocchi.graffitiplatform.payloads.UserStatsDTO;
 import cristianorocchi.graffitiplatform.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,5 +73,11 @@ public class UserController {
     @GetMapping("/me/stats")
     public Map<String, Long> getUserImageStats(@AuthenticationPrincipal User currentUser) {
         return userService.getUserImageStats(currentUser);
+    }
+
+    @GetMapping("/admin-stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserStatsDTO> getAllUsersWithStats() {
+        return userService.findAllWithStats();
     }
 }

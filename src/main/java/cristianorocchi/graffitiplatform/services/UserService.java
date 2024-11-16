@@ -3,7 +3,7 @@ package cristianorocchi.graffitiplatform.services;
 import cristianorocchi.graffitiplatform.entities.User;
 import cristianorocchi.graffitiplatform.exceptions.BadRequestException;
 import cristianorocchi.graffitiplatform.exceptions.NotFoundException;
-import cristianorocchi.graffitiplatform.payloads.NewUserDTO;
+import cristianorocchi.graffitiplatform.payloads.UserStatsDTO;
 import cristianorocchi.graffitiplatform.repositories.GraffitoRepository;
 import cristianorocchi.graffitiplatform.repositories.StreetArtRepository;
 import cristianorocchi.graffitiplatform.repositories.TagRepository;
@@ -16,10 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -48,7 +46,6 @@ public class UserService {
 
     // Salva un nuovo utente
     public User save(User user) {
-        // Verifica che l'email o lo username non siano già in uso
         userRepository.findByUsernameOrEmail(user.getUsername(), user.getEmail()).ifPresent(
                 u -> {
                     throw new BadRequestException("Lo username o l'email è già in uso!");
@@ -61,8 +58,6 @@ public class UserService {
         // Salva l'utente nel database
         return userRepository.save(user);
     }
-
-
 
     // Trova un utente per ID
     public User findById(UUID userId) {
@@ -118,6 +113,31 @@ public class UserService {
         return userRepository.save(currentUser);
     }
 
+    // Ottieni statistiche di immagini per tutti gli utenti
+    public List<UserStatsDTO> findAllWithStats() {
+        return userRepository.findAll().stream()
+                .map(user -> {
+                    long graffitiCount = graffitoRepository.countByUser(user);
+                    long streetArtCount = streetArtRepository.countByUser(user);
+                    long tagCount = tagRepository.countByUser(user);
+
+                    return new UserStatsDTO(
+                            user.getId(),
+                            user.getUsername(),
+                            user.getEmail(),
+                            graffitiCount,
+                            streetArtCount,
+                            tagCount,
+                            graffitiCount + streetArtCount + tagCount
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+
+
     public Map<String, Long> getUserImageStats(User user) {
         Map<String, Long> stats = new HashMap<>();
         stats.put("graffitiCount", graffitoRepository.countByUser(user));
@@ -125,6 +145,4 @@ public class UserService {
         stats.put("tagCount", tagRepository.countByUser(user));
         return stats;
     }
-
-
 }
