@@ -38,7 +38,7 @@ public class SecurityConfig {
 
     @Bean
     PasswordEncoder getBCrypt() {
-        return new BCryptPasswordEncoder(11);  // Lo stesso encoder del progetto precedente
+        return new BCryptPasswordEncoder(11);  
     }
 
     // Configurazione CORS
