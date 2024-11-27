@@ -44,11 +44,11 @@ public class StreetArtController {
 
         // Trasforma il DTO in un oggetto StreetArt
         StreetArt streetArt = new StreetArt();
-        streetArt.setLuogo(streetArtDTO.luogo());
-        streetArt.setImmagineUrl(streetArtDTO.immagineUrl());
-        streetArt.setStato(streetArtDTO.stato());
-        streetArt.setArtista(streetArtDTO.artista());
-        streetArt.setAnnoCreazione(streetArtDTO.annoCreazione());
+        streetArt.setLuogo(streetArtDTO.getLuogo());
+        streetArt.setImmagineUrl(streetArtDTO.getImmagineUrl());
+        streetArt.setStato(streetArtDTO.getStato());
+        streetArt.setArtista(streetArtDTO.getArtista());
+        streetArt.setAnnoCreazione(streetArtDTO.getAnnoCreazione());
         streetArt.setUser(currentUser); // Associa l'utente autenticato
 
         // Salva l'oggetto utilizzando il servizio

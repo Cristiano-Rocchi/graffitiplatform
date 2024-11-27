@@ -45,11 +45,11 @@ public class GraffitoController {
         User currentUser = (User) authentication.getPrincipal();
 
         Graffito graffito = new Graffito();
-        graffito.setLuogo(newGraffitoDTO.luogo());
-        graffito.setImmagineUrl(newGraffitoDTO.immagineUrl());
-        graffito.setStato(newGraffitoDTO.stato());
-        graffito.setArtista(newGraffitoDTO.artista());
-        graffito.setAnnoCreazione(newGraffitoDTO.annoCreazione());
+        graffito.setLuogo(newGraffitoDTO.getLuogo());
+        graffito.setImmagineUrl(newGraffitoDTO.getImmagineUrl());
+        graffito.setStato(newGraffitoDTO.getStato());
+        graffito.setArtista(newGraffitoDTO.getArtista());
+        graffito.setAnnoCreazione(newGraffitoDTO.getAnnoCreazione());
         graffito.setUser(currentUser);
 
         return graffitoService.save(graffito, currentUser.getId());

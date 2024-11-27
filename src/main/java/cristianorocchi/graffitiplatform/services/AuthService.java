@@ -26,11 +26,11 @@ public class AuthService {
     // Restituisce sia il token che l'utente autenticato
     public UserLoginRespDTO checkCredentialsAndGenerateToken(UserLoginDTO body) {
         // 1. Trova l'utente tramite email
-        User found = userRepository.findByUsernameOrEmail(body.email(), body.email())
+        User found = userRepository.findByUsernameOrEmail(body.getEmail(), body.getEmail())
                 .orElseThrow(() -> new UnauthorizedException("Credenziali errate!"));
 
         // 1.1 Verifico se la password combacia con quella salvata nel database
-        if (bcrypt.matches(body.password(), found.getPassword())) {
+        if (bcrypt.matches(body.getPassword(), found.getPassword())) {
             // 2. Se le credenziali sono corrette, genero un token JWT
             String token = jwtTools.createToken(found);
 

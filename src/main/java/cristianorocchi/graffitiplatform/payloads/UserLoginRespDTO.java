@@ -1,7 +1,16 @@
 package cristianorocchi.graffitiplatform.payloads;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserLoginRespDTO {
 
-public record UserLoginRespDTO(String token, String username, String email, String ruolo) {
+    private String token;
+    private String username;
+    private String email;
+    private String ruolo;
 }
-

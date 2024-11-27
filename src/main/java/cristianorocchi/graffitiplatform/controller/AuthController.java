@@ -48,9 +48,9 @@ public class AuthController {
         } else {
             // Creazione del nuovo utente
             User user = new User();
-            user.setUsername(body.username());
-            user.setEmail(body.email());
-            user.setPassword(body.password());
+            user.setUsername(body.getUsername());
+            user.setEmail(body.getEmail());
+            user.setPassword(body.getPassword());
             user.setRuolo(Ruolo.USER);  // Imposta il ruolo come USER di default
 
             // Salva il nuovo utente

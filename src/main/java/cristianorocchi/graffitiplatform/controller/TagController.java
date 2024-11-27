@@ -44,11 +44,11 @@ public class TagController {
         User currentUser = (User) authentication.getPrincipal();
 
         Tag tag = new Tag();
-        tag.setLuogo(newTagDTO.luogo());
-        tag.setImmagineUrl(newTagDTO.immagineUrl());
-        tag.setStato(newTagDTO.stato());
-        tag.setArtista(newTagDTO.artista());
-        tag.setAnnoCreazione(newTagDTO.annoCreazione());
+        tag.setLuogo(newTagDTO.getLuogo());
+        tag.setImmagineUrl(newTagDTO.getImmagineUrl());
+        tag.setStato(newTagDTO.getStato());
+        tag.setArtista(newTagDTO.getArtista());
+        tag.setAnnoCreazione(newTagDTO.getAnnoCreazione());
         tag.setUser(currentUser);
 
         // Passa anche l'ID dell'utente

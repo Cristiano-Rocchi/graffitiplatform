@@ -1,7 +1,14 @@
 package cristianorocchi.graffitiplatform.payloads;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserLoginDTO {
 
-public record UserLoginDTO(String email, String password) {
+    private String email;
+    private String password;
 }
-
