@@ -45,13 +45,17 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));  // Aggiungi il dominio del frontend
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));  // Permetti vari metodi
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));  // Permetti specifici header
-        configuration.setAllowCredentials(true);  // Permetti invio di credenziali come i cookie
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000", // Per lo sviluppo locale
+                "https://toxic-alina-graffitibench-c39e0907.koyeb.app", // Dominio del backend su Koyeb
+                "https://graffitibench.netlify.app" // Dominio del frontend su Netlify
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Permetti vari metodi
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // Permetti specifici header
+        configuration.setAllowCredentials(true); // Permetti invio di credenziali come cookie
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);  // Applica a tutte le rotte
+        source.registerCorsConfiguration("/**", configuration); // Applica a tutte le rotte
         return source;
     }
 }
